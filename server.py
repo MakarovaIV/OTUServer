@@ -57,7 +57,7 @@ class HttpServer(object):
                 rn = data[-4:]
                 if "\r\n\r\n" in str(rn, 'utf-8'):
                     break
-        self.on_new_req(data)
+        self.on_new_req(str(data, 'utf-8'))
 
     def send_resp(self, resp_data):
         if resp_data:

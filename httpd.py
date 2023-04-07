@@ -10,13 +10,19 @@ server = None
 
 def process_req(str):
     req = HTTPRequest(str)
-    if req.method == "":
+    if req.method == "GET":
         res = HTTPResponse()
-        server.send_resp(res.resp_to_str())
+        res.body = "<html>" \
+                   "<body>" \
+                   "<h1>Hello, World!</h1>" \
+                   "</body>" \
+                   "</html>"
+        server.send_resp(HTTPResponse.to_str(res))
+        # server.send_resp(HTTPResponse.resp_to_str())
 
 
-def handle_req_str(str):
-    thread = Thread(target=process_req, args=(str,))
+def handle_req_str(req_str):
+    thread = Thread(target=process_req, args=(req_str,))
     thread.start()
 
 

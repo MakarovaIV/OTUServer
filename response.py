@@ -1,10 +1,26 @@
 class HTTPResponse(object):
     def __init__(self):
-        self.protocol = ""
-        self.status_code = None
+        self.protocol = "HTTP/2.0"
+        self.status_code = 200
         self.status = "OK"
-        self.headers = {}
+        self.headers = {"Content-Type": "text/html; charset=utf-8"}
         self.body = ""
+
+    @staticmethod
+    def to_str(instance):
+        result = "" + instance.protocol + " " + str(instance.status_code) + " " + instance.status + "\r\n"
+        result += HTTPResponse.join_headers(instance.headers)
+        result += "\r\n"
+        result += instance.body
+        result += "\r\n"
+        return result
+
+    @staticmethod
+    def join_headers(headers):
+        result = ""
+        for key, value in headers.items():
+            result += str(key) + ": " + str(value) + "\r\n"
+        return result
 
     @staticmethod
     def resp_to_str():
