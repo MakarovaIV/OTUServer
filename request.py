@@ -1,20 +1,30 @@
-import json
+import urllib.parse
 
 
 class HTTPRequest(object):
-    def __init__(self, raw_data_str):
-        lines = raw_data_str.split("\r\n")
+    def __init__(self, byte_arr):
+        raw_str = str(byte_arr, 'utf-8')
+        lines = raw_str.split("\r\n")
         head_line = lines[0].split(" ")
 
         self.method = head_line[0]
-        self.uri = head_line[1] if len(head_line) >= 1 else ""
+        uri = head_line[1] if len(head_line) >= 1 else ""
+        query_params_index = uri.find('?')
+        if query_params_index != -1:
+            self.uri = urllib.parse.unquote(uri[0:query_params_index])
+            self.query_params = uri[query_params_index + 1:] \
+                if len(uri) > query_params_index + 1 \
+                else ""
+        else:
+            self.uri = urllib.parse.unquote(uri)
+            self.query_params = ""
+
         self.protocol = head_line[2] if len(head_line) >= 2 else ""
         self.headers = HTTPRequest.parse_headers(lines[1:-1])
-        self.body = ""
 
     @staticmethod
     def parse_headers(headers):
-        dict = {}
+        headers_dict = {}
         for h in headers:
             temp = h.split(":", 1)
             key = temp[0]
@@ -22,5 +32,5 @@ class HTTPRequest(object):
                 continue
             value = temp[1] if len(temp) >= 1 else ""
             value = value.strip()
-            dict[key] = value
-        return dict
+            headers_dict[key] = value
+        return headers_dict
